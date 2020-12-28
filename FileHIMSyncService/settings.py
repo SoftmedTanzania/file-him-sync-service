@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +67,9 @@ TEMPLATES = [
         },
     },
 ]
+
+# Celery related settings
+CELERY_BROKER_URL = 'amqp://localhost'
 
 WSGI_APPLICATION = 'FileHIMSyncService.wsgi.application'
 
