@@ -61,40 +61,44 @@ class CsvFileHandling(object):
                                 if r.status_code == 200:
                                     # move to out dir after successful posting
                                     shutil.move(self.in_dir +'/'+ filename, self.out_dir +'/' + filename )
+                                    return 200
                                 else:
                                     # move to err dir due to a failed posting
                                     shutil.move(self.in_dir + '/' + filename, self.err_dir + '/' + filename)
-                                return 200
+                                    return 404
                             elif file.startswith('services_received'):
                                 r = requests.post(self.send_services_url, files={filename: csv_file})
                                 # move file to output folder
                                 if r.status_code == 200:
                                     # move to out dir after successful posting
                                     shutil.move(self.in_dir + '/' + filename, self.out_dir + '/' + filename)
+                                    return 200
                                 else:
                                     # move to err dir due to a failed posting
                                     shutil.move(self.in_dir + '/' + filename, self.err_dir + '/' + filename)
-                                return 200
+                                    return 404
                             elif file.startswith('daily_death_count'):
                                 r = requests.post(self.send_daily_death_count_url, files={filename: csv_file})
                                 # move file to output folder
                                 if r.status_code == 200:
                                     # move to out dir after successful posting
                                     shutil.move(self.in_dir + '/' + filename, self.out_dir + '/' + filename)
+                                    return 200
                                 else:
                                     # move to err dir due to a failed posting
                                     shutil.move(self.in_dir + '/' + filename, self.err_dir + '/' + filename)
-                                return 200
+                                    return 404
                             elif file.startswith('revenue_received'):
                                 r = requests.post(self.send_revenue_url, files={filename: csv_file})
                                 # move file to output folder
                                 if r.status_code == 200:
                                     # move to out dir after successful posting
                                     shutil.move(self.in_dir + '/' + filename, self.out_dir + '/' + filename)
+                                    return 200
                                 else:
                                     # move to err dir due to a failed posting
                                     shutil.move(self.in_dir + '/' + filename, self.err_dir + '/' + filename)
-                                return 200
+                                    return 404
                             else:
                                 return 404
                 except Exception as e:
