@@ -33,11 +33,10 @@ class TestFileHandling(unittest.TestCase):
         self.send_daily_death_count_url = 'http://139.162.143.150:5001/daily_death_count'
         self.send_revenue_url = 'http://139.162.143.150:5001/revenue_received'
 
-        self.url = 'http://139.162.149.249'
-        self.root_dir = '/Users/user/Documents/EMR/'
-        self.in_dir = '/Users/user/Documents/EMR/in'
-        self.out_dir = '/Users/user/Documents/EMR/out'
-        self.err_dir = '/Users/user/Documents/EMR/err'
+        self.root_dir = '/home/danny/EMR/'
+        self.in_dir = '/home/danny/EMR/in'
+        self.out_dir = '/home/danny/EMR/out'
+        self.err_dir = '/home/danny/EMR/err'
 
         csv_file_handling = CsvFileHandling()
 
