@@ -1,6 +1,7 @@
 from .tasks import CsvFileHandling
 import unittest
 import os
+from pathlib import Path
 
 
 # Create your tests here.
@@ -42,7 +43,17 @@ class TestFileHandling(unittest.TestCase):
 
         for filename in os.listdir(self.in_dir):
             if filename.endswith(".csv"):
-                self.assertEqual(csv_file_handling.post_csv(self), 200)
+                file = Path(self.in_dir + "/" + filename).stem
+
+                if file.startswith('bed_occupancy'):
+                    self.assertEqual(csv_file_handling.post_csv(self), 200)
+                elif file.startswith('services_received'):
+                    self.assertEqual(csv_file_handling.post_csv(self), 200)
+                elif file.startswith('daily_death_count'):
+                    self.assertEqual(csv_file_handling.post_csv(self), 200)
+                elif file.startswith('revenue_received'):
+                    self.assertEqual(csv_file_handling.post_csv(self), 200)
+
 
 
 
