@@ -41,6 +41,8 @@ class CsvFileHandling(object):
                     shutil.move(self.root_dir + file + '.csv',
                                 self.in_dir + '/' + file + '_' + date_time_now + '.csv')
                     return 200
+                else:
+                    return 404
         except Exception as e:
             raise e
 
@@ -95,4 +97,6 @@ class CsvFileHandling(object):
                                 return 200
                 except Exception as e:
                     raise e
+            else:
+                return 404
 
