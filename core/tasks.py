@@ -1,5 +1,4 @@
-"""
-tasks.py is the file to hold all celery related tasks
+"""tasks.py is the file to hold all celery related tasks
 
 rabbit-mq is the message broker and django will be the producer of files.
 Tasks will be sent from django task file to celery via celery beats.
