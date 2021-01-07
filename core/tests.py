@@ -24,9 +24,11 @@ class TestFileHandling(unittest.TestCase):
         self.err_dir = 'EMR/err'
 
         csv_file_handling = CsvFileHandling()
+        test_function = csv_file_handling.add_to_file_queue(self)
+
         for filename in os.listdir(self.root_dir):
             if filename.endswith('csv'):
-                self.assertEqual(csv_file_handling.add_to_file_queue(self), 200)
+                self.assertEqual(test_function, 200)
 
 
 
@@ -47,14 +49,16 @@ class TestFileHandling(unittest.TestCase):
             if filename.endswith(".csv"):
                 file = Path(self.in_dir + "/" + filename).stem
 
+                test_function = csv_file_handling.post_csv(self)
+
                 if file.startswith('bed_occupancy'):
-                    self.assertEqual(csv_file_handling.post_csv(self), 200)
+                    self.assertEqual(test_function, 200)
                 elif file.startswith('services_received'):
-                    self.assertEqual(csv_file_handling.post_csv(self), 200)
+                    self.assertEqual(test_function, 200)
                 elif file.startswith('daily_death_count'):
-                    self.assertEqual(csv_file_handling.post_csv(self), 200)
+                    self.assertEqual(test_function, 200)
                 elif file.startswith('revenue_received'):
-                    self.assertEqual(csv_file_handling.post_csv(self), 200)
+                    self.assertEqual(test_function, 200)
 
 
 

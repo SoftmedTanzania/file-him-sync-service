@@ -20,11 +20,19 @@ class CsvFileHandling(object):
 
 
         # file paths
+        # development
         # self.root_dir = '/Users/user/Documents/EMR/'
         # self.in_dir = '/Users/user/Documents/EMR/in'
         # self.out_dir = '/Users/user/Documents/EMR/out'
         # self.err_dir = '/Users/user/Documents/EMR/err'
 
+        # staging
+        # self.root_dir = '/home/danny/EMR/'
+        # self.in_dir = '/home/danny/EMR/in'
+        # self.out_dir = '/home/danny/EMR/out'
+        # self.err_dir = '/home/danny/EMR/err'
+
+        # github tests
         self.root_dir = 'EMR/'
         self.in_dir = 'EMR/in'
         self.out_dir = 'EMR/out'
