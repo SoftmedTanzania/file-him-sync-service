@@ -20,10 +20,15 @@ class CsvFileHandling(object):
 
 
         # file paths
-        self.root_dir = '/Users/user/Documents/EMR/'
-        self.in_dir = '/Users/user/Documents/EMR/in'
-        self.out_dir = '/Users/user/Documents/EMR/out'
-        self.err_dir = '/Users/user/Documents/EMR/err'
+        # self.root_dir = '/Users/user/Documents/EMR/'
+        # self.in_dir = '/Users/user/Documents/EMR/in'
+        # self.out_dir = '/Users/user/Documents/EMR/out'
+        # self.err_dir = '/Users/user/Documents/EMR/err'
+
+        self.root_dir = '/home/danny/EMR/'
+        self.in_dir = '/home/danny/EMR/in'
+        self.out_dir = '/home/danny/EMR/out'
+        self.err_dir = '/home/danny/EMR/err'
 
     @shared_task
     def add_to_file_queue(self):
