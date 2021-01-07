@@ -1,6 +1,6 @@
+"""init for FileHIMSyncService project.
 
-"""tasks.py is the file to hold all celery relates tasks
- using rabbit-mq as the message broker.
+it lets python know that this is a python directory
 """
 
 from .celery import app as celery_app

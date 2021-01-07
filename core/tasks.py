@@ -1,6 +1,8 @@
 
-"""tasks.py is the file to hold all celery relates tasks
- using rabbit-mq as the message broker.
+"""tasks.py is the file to hold all celery related tasks
+
+rabbit-mq is the message broker and django will be the producer of files.
+Tasks will be sent from django task file to celery via celery beats.
 """
 
 import requests
@@ -9,8 +11,6 @@ import os
 from pathlib import Path
 import shutil
 from datetime import datetime
-
-
 
 
 class CsvFileHandling(object):
@@ -37,7 +37,7 @@ class CsvFileHandling(object):
         # self.out_dir = '/home/danny/EMR/out'
         # self.err_dir = '/home/danny/EMR/err'
 
-        # github tests
+        # git hub tests
         self.root_dir = 'EMR/'
         self.in_dir = 'EMR/in'
         self.out_dir = 'EMR/out'
