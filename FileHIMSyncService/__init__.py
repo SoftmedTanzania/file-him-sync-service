@@ -1,3 +1,4 @@
+
 """tasks.py is the file to hold all celery relates tasks
  using rabbit-mq as the message broker.
 """
