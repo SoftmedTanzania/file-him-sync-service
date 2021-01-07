@@ -95,6 +95,8 @@ class CsvFileHandling(object):
                                     # move to err dir due to a failed posting
                                     shutil.move(self.in_dir + '/' + filename, self.err_dir + '/' + filename)
                                 return 200
+                            else:
+                                return 404
                 except Exception as e:
                     raise e
             else:
