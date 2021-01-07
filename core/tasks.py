@@ -25,10 +25,10 @@ class CsvFileHandling(object):
         # self.out_dir = '/Users/user/Documents/EMR/out'
         # self.err_dir = '/Users/user/Documents/EMR/err'
 
-        self.root_dir = '/home/danny/EMR/'
-        self.in_dir = '/home/danny/EMR/in'
-        self.out_dir = '/home/danny/EMR/out'
-        self.err_dir = '/home/danny/EMR/err'
+        self.root_dir = 'EMR/'
+        self.in_dir = 'EMR/in'
+        self.out_dir = 'EMR/out'
+        self.err_dir = 'EMR/err'
 
     @shared_task
     def add_to_file_queue(self):
@@ -41,8 +41,6 @@ class CsvFileHandling(object):
                     shutil.move(self.root_dir + file + '.csv',
                                 self.in_dir + '/' + file + '_' + date_time_now + '.csv')
                     return 200
-                else:
-                    return 404
         except Exception as e:
             raise e
 
@@ -61,48 +59,40 @@ class CsvFileHandling(object):
                                 if r.status_code == 200:
                                     # move to out dir after successful posting
                                     shutil.move(self.in_dir +'/'+ filename, self.out_dir +'/' + filename )
-                                    return 200
                                 else:
                                     # move to err dir due to a failed posting
                                     shutil.move(self.in_dir + '/' + filename, self.err_dir + '/' + filename)
-                                    return 404
+                                return 200
                             elif file.startswith('services_received'):
                                 r = requests.post(self.send_services_url, files={filename: csv_file})
                                 # move file to output folder
                                 if r.status_code == 200:
                                     # move to out dir after successful posting
                                     shutil.move(self.in_dir + '/' + filename, self.out_dir + '/' + filename)
-                                    return 200
                                 else:
                                     # move to err dir due to a failed posting
                                     shutil.move(self.in_dir + '/' + filename, self.err_dir + '/' + filename)
-                                    return 404
+                                return 200
                             elif file.startswith('daily_death_count'):
                                 r = requests.post(self.send_daily_death_count_url, files={filename: csv_file})
                                 # move file to output folder
                                 if r.status_code == 200:
                                     # move to out dir after successful posting
                                     shutil.move(self.in_dir + '/' + filename, self.out_dir + '/' + filename)
-                                    return 200
                                 else:
                                     # move to err dir due to a failed posting
                                     shutil.move(self.in_dir + '/' + filename, self.err_dir + '/' + filename)
-                                    return 404
+                                return 200
                             elif file.startswith('revenue_received'):
                                 r = requests.post(self.send_revenue_url, files={filename: csv_file})
                                 # move file to output folder
                                 if r.status_code == 200:
                                     # move to out dir after successful posting
                                     shutil.move(self.in_dir + '/' + filename, self.out_dir + '/' + filename)
-                                    return 200
                                 else:
                                     # move to err dir due to a failed posting
                                     shutil.move(self.in_dir + '/' + filename, self.err_dir + '/' + filename)
-                                    return 404
-                            else:
-                                return 404
+                                return 200
                 except Exception as e:
                     raise e
-            else:
-                return 404
 

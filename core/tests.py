@@ -27,8 +27,7 @@ class TestFileHandling(unittest.TestCase):
         for filename in os.listdir(self.root_dir):
             if filename.endswith('csv'):
                 self.assertEqual(csv_file_handling.add_to_file_queue(self), 200)
-            else:
-                self.assertEqual(csv_file_handling.add_to_file_queue(self), 404)
+
 
 
     def test_posting_csv(self):
@@ -56,8 +55,7 @@ class TestFileHandling(unittest.TestCase):
                     self.assertEqual(csv_file_handling.post_csv(self), 200)
                 elif file.startswith('revenue_received'):
                     self.assertEqual(csv_file_handling.post_csv(self), 200)
-            else:
-                self.assertEqual(csv_file_handling.post_csv(self), 404)
+
 
 
 
