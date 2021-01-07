@@ -17,10 +17,10 @@ class TestFileHandling(unittest.TestCase):
         # self.out_dir = '/Users/user/Documents/EMR/out'
         # self.err_dir = '/Users/user/Documents/EMR/err'
 
-        self.root_dir = '/EMR/'
-        self.in_dir = '/EMR/in'
-        self.out_dir = '/EMR/out'
-        self.err_dir = '/EMR/err'
+        self.root_dir = 'EMR/'
+        self.in_dir = 'EMR/in'
+        self.out_dir = 'EMR/out'
+        self.err_dir = 'EMR/err'
 
         csv_file_handling = CsvFileHandling()
         for filename in os.listdir(self.root_dir):
