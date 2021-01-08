@@ -10,98 +10,72 @@ import os
 from pathlib import Path
 import shutil
 from datetime import datetime
+from .models import Mediator, File, FilePath
 
 app = Celery()
 
-# def __init__(self):
-#     # mediator end points
-send_bed_occupancy_url = 'http://139.162.143.150:5001/bed_occupancy'
-send_services_url = 'http://139.162.143.150:5001/services_received'
-send_daily_death_count_url = 'http://139.162.143.150:5001/daily_death_count'
-send_revenue_url = 'http://139.162.143.150:5001/revenue_received'
-
-# staging
-# root_dir = '/home/danny/EMR/'
-# in_dir = '/home/danny/EMR/in'
-# out_dir = '/home/danny/EMR/out'
-# err_dir = '/home/danny/EMR/err'
-
-# development
-root_dir = '/Users/user/Documents/EMR/'
-in_dir = '/Users/user/Documents/EMR/in'
-out_dir = '/Users/user/Documents/EMR/out'
-err_dir = '/Users/user/Documents/EMR/err'
-
-
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    app.add_periodic_task(10.0, add_to_file_queue.s(root_dir, in_dir), name='add every 10')
+    # pass_emr_related_configs
+    app.add_periodic_task(10.0, prepare_csv_file_queue.s(), name='add every 10')
+    app.add_periodic_task(10.0, post_csv_files.s(), name='add every 10')
 
-    app.add_periodic_task(10.0, post_csv.s(in_dir, out_dir, err_dir, send_bed_occupancy_url,
-                                           send_services_url, send_daily_death_count_url, send_revenue_url),
-                          name='add every 10')
 
 @app.task
-def add_to_file_queue(root_path,in_path):
+def prepare_csv_file_queue():
     try:
-        for filename in os.listdir(root_path):
-            if filename.endswith(".csv"):
-                file = Path(root_path + "/" + filename).stem
-                date_time_now = str(datetime.now().strftime("%d%m%Y_%H%M%S"))
-                shutil.move(root_path + file + '.csv',
-                            in_path + '/' + file + '_' + date_time_now + '.csv')
-        return 200
+        mediators = Mediator.objects.filter(is_active=1)
+
+        for mediator in mediators:
+            # Get root directory
+            in_path = FilePath.objects.get(mediator=mediator, path_type='in_dir').file_path
+            root_path = FilePath.objects.get(mediator=mediator, path_type='root_dir').file_path
+
+            for file in os.listdir(root_path):
+                if file.endswith(".csv"):
+                    file_name = Path(root_path + "/" + file).stem
+                    date_time_now = str(datetime.now().strftime("%d%m%Y_%H%M%S"))
+                    shutil.move(root_path + file_name + '.csv',
+                                in_path + '/' + file_name + '__' + date_time_now + '.csv')
+            return 200
+    except Exception as e:
+        raise e
+
+@app.task
+def post_csv_files():
+    try:
+        mediators = Mediator.objects.filter(is_active=1)
+
+        for mediator in mediators:
+            in_path = FilePath.objects.get(mediator=mediator, path_type='in_dir').file_path
+            out_path = FilePath.objects.get(mediator=mediator, path_type='out_dir').file_path
+            err_path = FilePath.objects.get(mediator=mediator, path_type='err_dir').file_path
+
+            for dir_file in os.listdir(in_path):
+                file_name = Path(in_path + "/" + dir_file).stem
+                sep = '__'
+                stripped_file_name = file_name.split(sep, 1)[0]
+
+                files = File.objects.filter(mediator=mediator,file_name__startswith=stripped_file_name)
+
+                for file in files:
+                    try:
+                        post_url = file.end_point
+                        with open(in_path + '/' + dir_file, 'rb') as csv_file:
+                            r = requests.post(post_url, files={dir_file: csv_file})
+                            # move file to output folder
+                            if r.status_code == 200:
+                                # move to out dir after successful posting
+                                shutil.move(in_path + '/' + dir_file, out_path + '/' + dir_file)
+                            else:
+                                # move to err dir due to a failed posting
+                                shutil.move(in_path + '/' + dir_file, err_path + '/' + dir_file)
+                            return 200
+                    except Exception as e:
+                        raise e
     except Exception as e:
         raise e
 
 
-@app.task
-def post_csv(in_path, out_path, err_path, final_bed_occupancy_url, final_services_url,
-             final_daily_death_count_url, final_revenue_url):
 
-    for filename in os.listdir(in_path):
-        if filename.endswith(".csv"):
-            file = Path(in_path + "/" + filename).stem
-            try:
-                with open(in_path+'/'+filename, 'rb') as csv_file:
-                    # bed occupancy processing
-                    if file.startswith('bed_occupancy'):
-                        r = requests.post(final_bed_occupancy_url, files={filename: csv_file})
-                        # move file to output folder
-                        if r.status_code == 200:
-                            # move to out dir after successful posting
-                            shutil.move(in_path +'/'+ filename, out_path +'/' + filename )
-                        else:
-                            # move to err dir due to a failed posting
-                            shutil.move(in_path + '/' + filename, err_path + '/' + filename)
-                    elif file.startswith('services_received'):
-                        r = requests.post(final_services_url, files={filename: csv_file})
-                        # move file to output folder
-                        if r.status_code == 200:
-                            # move to out dir after successful posting
-                            shutil.move(in_path + '/' + filename, out_path + '/' + filename)
-                        else:
-                            # move to err dir due to a failed posting
-                            shutil.move(in_path + '/' + filename, err_path + '/' + filename)
-                    elif file.startswith('daily_death_count'):
-                        r = requests.post(final_daily_death_count_url, files={filename: csv_file})
-                        # move file to output folder
-                        if r.status_code == 200:
-                            # move to out dir after successful posting
-                            shutil.move(in_path + '/' + filename, out_path + '/' + filename)
-                        else:
-                            # move to err dir due to a failed posting
-                            shutil.move(in_path + '/' + filename, err_path + '/' + filename)
-                    elif file.startswith('revenue_received'):
-                        r = requests.post(final_revenue_url, files={filename: csv_file})
-                        # move file to output folder
-                        if r.status_code == 200:
-                            # move to out dir after successful posting
-                            shutil.move(in_path + '/' + filename,out_path + '/' + filename)
-                        else:
-                            # move to err dir due to a failed posting
-                            shutil.move(in_path + '/' + filename, err_path + '/' + filename)
-                    return 200
-            except Exception as e:
-                raise e
 

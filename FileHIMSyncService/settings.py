@@ -70,7 +70,13 @@ TEMPLATES = [
 ]
 
 # Celery related settings
-CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_BROKER_URL = 'amqp://localhost:5672'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
+CELERY_TIMEZONE = 'UTC'
+CELERY_ENABLE_UTC = True
 
 WSGI_APPLICATION = 'FileHIMSyncService.wsgi.application'
 
@@ -80,8 +86,15 @@ WSGI_APPLICATION = 'FileHIMSyncService.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'OPTIONS': {
+          'options': '-c search_path=public'
+        },
+        'NAME': 'file-sync',
+        'USER': 'postgres',
+        'PASSWORD': 'HdrPostgresPass2020',
+        'HOST': '139.162.149.249',
+        'PORT': '5432',
     }
 }
 
