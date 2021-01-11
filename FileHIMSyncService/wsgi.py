@@ -1,5 +1,4 @@
-"""
-WSGI config for FileHIMSyncService project.
+"""WSGI config for FileHIMSyncService project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
