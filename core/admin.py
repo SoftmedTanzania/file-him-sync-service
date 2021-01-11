@@ -18,3 +18,9 @@ class FilePathAdmin(admin.ModelAdmin):
 admin.site.register(Mediator, MediatorAdmin)
 admin.site.register(File, FileAdmin)
 admin.site.register(FilePath, FilePathAdmin)
+
+
+admin.site.site_header = 'File Sync Panel'
+admin.site.site_url = '/dashboard'
+admin.site.site_title = 'File Sync Panel'
+admin.site.index_title = 'App Configurations'

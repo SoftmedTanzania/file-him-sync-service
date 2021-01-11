@@ -14,13 +14,6 @@ from .models import Mediator, File, FilePath
 
 app = Celery()
 
-@app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    # pass_emr_related_configs
-    app.add_periodic_task(10.0, prepare_csv_file_queue.s(), name='add every 10')
-    app.add_periodic_task(10.0, post_csv_files.s(), name='add every 10')
-
-
 @app.task
 def prepare_csv_file_queue():
     try:
