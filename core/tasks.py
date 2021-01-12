@@ -51,21 +51,21 @@ def post_csv_files():
 
                 files = File.objects.filter(mediator=mediator,file_name__startswith=stripped_file_name)
 
-                for file in files:
-                    try:
-                        post_url = file.end_point
-                        with open(in_path + '/' + dir_file, 'rb') as csv_file:
-                            r = requests.post(post_url, files={dir_file: csv_file})
-                            # move file to output folder
-                            if r.status_code == 200:
-                                # move to out dir after successful posting
-                                shutil.move(in_path + '/' + dir_file, out_path + '/' + dir_file)
-                            else:
-                                # move to err dir due to a failed posting
-                                shutil.move(in_path + '/' + dir_file, err_path + '/' + dir_file)
-                            return 200
-                    except Exception as e:
-                        raise e
+                try:
+                    for file in files:
+                            post_url = file.end_point
+                            with open(in_path + '/' + dir_file, 'rb') as csv_file:
+                                r = requests.post(post_url, files={dir_file: csv_file}, auth=("emr-filedrop-sync-service", "Him123"))
+                                # move file to output folder
+                                if r.status_code == 200:
+                                    # move to out dir after successful posting
+                                    shutil.move(in_path + '/' + dir_file, out_path + '/' + dir_file)
+                                else:
+                                    # move to err dir due to a failed posting
+                                    shutil.move(in_path + '/' + dir_file, err_path + '/' + dir_file)
+                except Exception as e:
+                    raise e
+            return 200
     except Exception as e:
         raise e
 
