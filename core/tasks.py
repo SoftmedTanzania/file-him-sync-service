@@ -8,7 +8,6 @@ import requests
 from celery import Celery
 import os
 from pathlib import Path
-import shutil
 from datetime import datetime
 from .models import Mediator, File, FilePath
 
