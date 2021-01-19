@@ -12,7 +12,7 @@ class FileAdmin(admin.ModelAdmin):
 
 
 class FilePathAdmin(admin.ModelAdmin):
-    list_display = ('mediator', 'file_path', 'path_type')
+    list_display = ('mediator', 'directory_path')
     search_fields = ['mediator',]
 
 admin.site.register(Mediator, MediatorAdmin)
