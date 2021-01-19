@@ -26,7 +26,7 @@ def prepare_csv_file_queue():
             # One mediator will have only one file to send
             file_description = File.objects.get(mediator=mediator).file_name
 
-            for subdir, dir, files in os.walk(root_path):
+            for subdir, dirs, files in os.walk(root_path):
                 for file in os.listdir(subdir):
                     file_name = Path(subdir + "/" + file).stem
                     if file == file_description:
@@ -48,7 +48,7 @@ def post_csv_files():
             file_end_point = File.objects.get(mediator=mediator).end_point
 
             try:
-                for subdir, dir, files in os.walk(root_path):
+                for subdir, dirs, files in os.walk(root_path):
                     for file in os.listdir(subdir):
                         file_name = Path(subdir + "/" + file).stem
                         date_time_now = str(datetime.now().strftime("%d%m%Y_%H%M%S"))
