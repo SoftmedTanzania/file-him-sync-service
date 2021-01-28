@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import datetime
 from .models import Mediator, File, FilePath
 
+
 app = Celery()
 
 @app.task
@@ -53,8 +54,11 @@ def post_csv_files():
                         date_time_now = str(datetime.now().strftime("%d%m%Y_%H%M%S"))
                         if file.endswith("in.csv"):
                             with open(subdir + '/' + file, 'rb') as csv_file:
-                                r = requests.post(file_end_point, files={file: csv_file},
-                                                  auth=("emr-filedrop-sync-service", "Him123"))
+
+                                headers = {'content-type': 'text/csv'}
+
+                                r = requests.post(file_end_point, csv_file,
+                                                  auth=("emr-filedrop-sync-service", "Him123"), headers=headers)
                                 if r.status_code == 200:
                                     # move to out dir after successful posting
                                     os.rename(subdir + '/' + file_name + '.csv',
