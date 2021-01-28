@@ -29,21 +29,8 @@ class FilePath(models.Model):
     def __str__(self):
         return '%d' %self.id
 
-    In = 'in_dir'
-    Out = 'out_dir'
-    Err = 'err_dir'
-    Root = 'root_dir'
-
-    PATH_CHOICES = (
-        (In, 'Input Directory'),
-        (Out, 'Output Directory'),
-        (Err, 'Error Directory'),
-        (Root, 'Root Directory')
-    )
-
     mediator = models.ForeignKey(Mediator, on_delete=models.CASCADE, null=True, blank=True)
-    file_path = models.TextField()
-    path_type = models.CharField(max_length=100, choices=PATH_CHOICES)
+    directory_path = models.TextField()
 
     class Meta:
         db_table = 'FilePaths'

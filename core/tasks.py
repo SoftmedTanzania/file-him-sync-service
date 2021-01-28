@@ -8,9 +8,9 @@ import requests
 from celery import Celery
 import os
 from pathlib import Path
-import shutil
 from datetime import datetime
 from .models import Mediator, File, FilePath
+
 
 app = Celery()
 
@@ -21,18 +21,22 @@ def prepare_csv_file_queue():
 
         for mediator in mediators:
             # Get root directory
-            in_path = FilePath.objects.get(mediator=mediator, path_type='in_dir').file_path
-            root_path = FilePath.objects.get(mediator=mediator, path_type='root_dir').file_path
+            root_path = FilePath.objects.get(mediator=mediator).directory_path
 
-            for file in os.listdir(root_path):
-                if file.endswith(".csv"):
-                    file_name = Path(root_path + "/" + file).stem
-                    date_time_now = str(datetime.now().strftime("%d%m%Y_%H%M%S"))
-                    shutil.move(root_path + file_name + '.csv',
-                                in_path + '/' + file_name + '__' + date_time_now + '.csv')
+            # One mediator will have only one file to send
+            file_description = File.objects.get(mediator=mediator).file_name
+
+            for subdir, _, _ in os.walk(root_path):#pylint: disable=possibly-unused-variable
+                for file in os.listdir(subdir):
+                    file_name = Path(subdir + "/" + file).stem
+                    if file == file_description:
+                        date_time_now = str(datetime.now().strftime("%d%m%Y_%H%M%S"))
+                        os.rename(subdir + '/' + file_name + '.csv',
+                                  subdir +'/' + file_name + '__' + date_time_now + '_in.csv')
             return 200
     except Exception as e:
         raise e
+
 
 @app.task
 def post_csv_files():
@@ -40,32 +44,32 @@ def post_csv_files():
         mediators = Mediator.objects.filter(is_active=1)
 
         for mediator in mediators:
-            in_path = FilePath.objects.get(mediator=mediator, path_type='in_dir').file_path
-            out_path = FilePath.objects.get(mediator=mediator, path_type='out_dir').file_path
-            err_path = FilePath.objects.get(mediator=mediator, path_type='err_dir').file_path
+            root_path = FilePath.objects.get(mediator=mediator).directory_path
+            file_end_point = File.objects.get(mediator=mediator).end_point
 
-            for dir_file in os.listdir(in_path):
-                file_name = Path(in_path + "/" + dir_file).stem
-                sep = '__'
-                stripped_file_name = file_name.split(sep, 1)[0]
+            try:
+                for subdir, _, _ in os.walk(root_path):#pylint: disable=possibly-unused-variable
+                    for file in os.listdir(subdir):
+                        file_name = Path(subdir + "/" + file).stem
+                        date_time_now = str(datetime.now().strftime("%d%m%Y_%H%M%S"))
+                        if file.endswith("in.csv"):
+                            with open(subdir + '/' + file, 'rb') as csv_file:
 
-                files = File.objects.filter(mediator=mediator,file_name__startswith=stripped_file_name)
+                                headers = {'content-type': 'text/csv'}
 
-                for file in files:
-                    try:
-                        post_url = file.end_point
-                        with open(in_path + '/' + dir_file, 'rb') as csv_file:
-                            r = requests.post(post_url, files={dir_file: csv_file})
-                            # move file to output folder
-                            if r.status_code == 200:
-                                # move to out dir after successful posting
-                                shutil.move(in_path + '/' + dir_file, out_path + '/' + dir_file)
-                            else:
-                                # move to err dir due to a failed posting
-                                shutil.move(in_path + '/' + dir_file, err_path + '/' + dir_file)
-                            return 200
-                    except Exception as e:
-                        raise e
+                                r = requests.post(file_end_point, csv_file,
+                                                  auth=("emr-filedrop-sync-service", "Him123"), headers=headers)
+                                if r.status_code == 200:
+                                    # move to out dir after successful posting
+                                    os.rename(subdir + '/' + file_name + '.csv',
+                                              subdir + '/' + file_name + '__' + date_time_now + '_out.csv')
+                                else:
+                                    # move to err dir due to a failed posting
+                                    os.rename(subdir + '/' + file_name + '.csv',
+                                              subdir + '/' + file_name + '__' + date_time_now + '_err.csv')
+            except Exception as e:
+                raise e
+        return 200
     except Exception as e:
         raise e
 
