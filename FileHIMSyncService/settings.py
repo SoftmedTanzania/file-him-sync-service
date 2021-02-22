@@ -25,7 +25,7 @@ SECRET_KEY = '5evys%!e6s=2a%s^bu-6vwh7^@zc)^c5l9dz=lmbkxh@+xh8*w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['41.59.227.81',]
 
 
 # Application definition
@@ -94,7 +94,7 @@ DATABASES = {
         'NAME': 'file-sync',
         'USER': 'postgres',
         'PASSWORD': 'HdrPostgresPass2020',
-        'HOST': '139.162.149.249',
+        'HOST': '41.59.227.81',
         'PORT': '5432',
     }
 }
